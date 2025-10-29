@@ -1,0 +1,15 @@
+[2024-10-29 10:15:23] INFO: Application started successfully
+[2024-10-29 10:15:24] INFO: Loading configuration from file
+[2024-10-29 10:15:25] DEBUG: Database connection established
+[2024-10-29 10:16:01] INFO: User login attempt - username: admin
+[2024-10-29 10:16:02] INFO: User authenticated successfully
+[2024-10-29 10:17:15] DEBUG: Search query executed - query: "test"
+[2024-10-29 10:17:16] INFO: Found 5 results
+[2024-10-29 10:18:30] WARN: High memory usage detected
+[2024-10-29 10:19:45] ERROR: File upload failed - size exceeds limit
+[2024-10-29 10:20:01] INFO: Rate limit applied to client 127.0.0.1
+[2024-10-29 10:21:30] DEBUG: Session expired for user admin
+
+This is a demo log file for testing path traversal attacks.
+Try accessing: /view-log?filename=../../../pom.xml
+Or: /view-log?filename=../../../application.properties
