@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * GATEKEEPER PATTERN: Rate Limiting Filter
  * Uncomment @Component to enable rate limiting
  */
-@Component
+// @Component
 public class RateLimitingFilter implements Filter {
 
     private static final int MAX_REQUESTS = 100;

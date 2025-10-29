@@ -61,13 +61,25 @@ public class UnifiedController {
 
     // Simple simulated SQL login (vulnerable example)
     private boolean loginWithSQLi(String username, String password) {
-        // This method simulates a vulnerable DB lookup using string concatenation.
-        // In the demo we simply treat specific payloads as successful to mimic SQLi
-        // bypass.
-        if (username != null && username.contains("' OR '1'='1")) {
-            return true; // simulated bypass
+        // Simulate a vulnerable SQL query built by concatenation (unsafe):
+        // "SELECT u FROM users u WHERE username = '" + username + "' AND password = '"
+        // + password + "'"
+        // We'll represent the constructed SQL string and then simulate how a DB would
+        // evaluate it
+        String simulatedSql = "SELECT u FROM users u WHERE username = '" + username + "' AND password = '" + password
+                + "'";
+
+        // Normalize for simple pattern checks (lowercase)
+        String lower = simulatedSql.toLowerCase();
+
+        // If attacker injects an always-true condition using OR (common SQLi patterns),
+        // treat as bypass
+        if (lower.contains(" or 1=1") || lower.contains(" or 1==1") || lower.contains("' or '1'='1")
+                || lower.contains("\" or \"1\"=\"1\"")) {
+            return true; // simulated SQLi bypass
         }
-        // naive check
+
+        // Otherwise use a naive credential check (demo only)
         return "admin".equals(username) && "admin123".equals(password);
     }
 
