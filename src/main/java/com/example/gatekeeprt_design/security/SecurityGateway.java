@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Component
+// @Component
 public class SecurityGateway {
 
-    @Autowired
+    @Autowired(required = false)
     private InputValidator validator;
 
     public boolean validateLogin(String username, String password) {

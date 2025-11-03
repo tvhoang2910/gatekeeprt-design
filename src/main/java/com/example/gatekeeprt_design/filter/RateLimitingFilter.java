@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+// @Component
 public class RateLimitingFilter implements Filter {
 
     private static final int MAX_REQUESTS = 100;
