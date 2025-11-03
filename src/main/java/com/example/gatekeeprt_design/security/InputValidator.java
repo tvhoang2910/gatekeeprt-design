@@ -8,10 +8,8 @@ public class InputValidator {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
-
     private static final Pattern USERNAME_PATTERN = Pattern.compile(
             "^[A-Za-z0-9_]{3,20}$");
-
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
             "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$");
 

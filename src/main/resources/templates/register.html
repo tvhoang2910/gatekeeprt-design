@@ -103,15 +103,13 @@
         <h1>📝 Register</h1>
 
         <div class="demo-note">
-            <strong>Input Validation Bypass Test:</strong><br>
-            Email: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code><br>
-            Password: anything<br>
-            Try bypassing email validation!
+            <strong>Input Validation Test:</strong> Try email: &lt;script&gt;alert(1)&lt;/script&gt;
         </div>
 
         <form method="POST" action="/register">
             <input type="text" name="username" placeholder="Username" required>
-            <input type="email" name="email" placeholder="Email" required>
+            <!-- <input type="email" name="email" placeholder="Email" required> -->
+            <input type="text" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Register</button>
         </form>

@@ -11,5 +11,5 @@
 [2024-10-29 10:21:30] DEBUG: Session expired for user admin
 
 This is a demo log file for testing path traversal attacks.
-Try accessing: /view-log?filename=../../../pom.xml
+Try accessing: /view-log?filename=../pom.xml
 Or: /view-log?filename=../../../application.properties

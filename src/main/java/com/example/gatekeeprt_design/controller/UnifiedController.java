@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,17 +39,12 @@ public class UnifiedController {
     public String login(@RequestParam String username,
             @RequestParam String password,
             Model model) {
-        // ========== VULNERABLE: SQL Injection ==========
-        boolean authenticated = loginWithSQLi(username, password);
-
-        // ========== SECURE (UNCOMMENT / ENABLE GATEKEEPER): SQL Injection Protection
-        // ==========
-        // boolean authenticated = false;
-        // if (securityGateway != null) {
-        // authenticated = securityGateway.validateLogin(username, password);
-        // } else {
-        // authenticated = loginWithSQLi(username, password);
-        // }
+        boolean authenticated;
+        if (securityGateway != null) {
+            authenticated = securityGateway.validateLogin(username, password);
+        } else {
+            authenticated = unsafeLogin(username, password);
+        }
 
         if (authenticated) {
             model.addAttribute("message", "Welcome, " + username);
@@ -59,27 +55,14 @@ public class UnifiedController {
         }
     }
 
-    // Simple simulated SQL login (vulnerable example)
-    private boolean loginWithSQLi(String username, String password) {
-        // Simulate a vulnerable SQL query built by concatenation (unsafe):
-        // "SELECT u FROM users u WHERE username = '" + username + "' AND password = '"
-        // + password + "'"
-        // We'll represent the constructed SQL string and then simulate how a DB would
-        // evaluate it
-        String simulatedSql = "SELECT u FROM users u WHERE username = '" + username + "' AND password = '" + password
-                + "'";
-
-        // Normalize for simple pattern checks (lowercase)
+    private boolean unsafeLogin(String username, String password) {
+        String simulatedSql = "SELECT u FROM users u WHERE username = '" + username
+                + "' AND password = '" + password + "'";
         String lower = simulatedSql.toLowerCase();
-
-        // If attacker injects an always-true condition using OR (common SQLi patterns),
-        // treat as bypass
-        if (lower.contains(" or 1=1") || lower.contains(" or 1==1") || lower.contains("' or '1'='1")
-                || lower.contains("\" or \"1\"=\"1\"")) {
-            return true; // simulated SQLi bypass
+        if (lower.contains(" or 1=1") || lower.contains(" or 1==1")
+                || lower.contains("' or '1'='1") || lower.contains("\" or \"1\"=\"1\"")) {
+            return true;
         }
-
-        // Otherwise use a naive credential check (demo only)
         return "admin".equals(username) && "admin123".equals(password);
     }
 
@@ -91,13 +74,12 @@ public class UnifiedController {
 
     @PostMapping("/search")
     public String search(@RequestParam String query, Model model) {
-        // ========== VULNERABLE: XSS ==========
-        String result = query + " - Search result"; // no escaping
-
-        // ========== SECURE (UNCOMMENT / ENABLE GATEKEEPER): XSS Protection ==========
-        // if (securityGateway != null) {
-        // result = securityGateway.sanitizeXSS(query) + " - Search result";
-        // }
+        String result = query + " - Search result";
+        if (securityGateway != null) {
+            result = securityGateway.sanitizeXSS(query) + " - Search result";
+        } else {
+            // Vulnerable: no escaping
+        }
 
         model.addAttribute("result", result);
         return "search";
@@ -106,16 +88,12 @@ public class UnifiedController {
     // View log - demonstrates path traversal when filename is concatenated
     @GetMapping("/view-log")
     public String viewLog(@RequestParam String filename, Model model) {
-        // ========== VULNERABLE: Path Traversal ==========
         String filePath = "logs/" + filename;
-
-        // ========== SECURE (UNCOMMENT / ENABLE GATEKEEPER): Path Traversal Protection
-        // ==========
-        // if (securityGateway != null) {
-        // filePath = securityGateway.validateFilePath(filename, "logs");
-        // } else {
-        // filePath = "logs/" + filename;
-        // }
+        if (securityGateway != null) {
+            filePath = securityGateway.validateFilePath(filename, "logs");
+        } else {
+            // Vulnerable: direct path concatenation
+        }
 
         try {
             Path p = Paths.get(filePath).toAbsolutePath().normalize();
@@ -161,20 +139,15 @@ public class UnifiedController {
             return "upload";
         }
 
-        // ========== VULNERABLE: No proper server-side validation ==========
-        long maxSize = Long.MAX_VALUE; // effectively no limit
-
-        // ========== SECURE (UNCOMMENT / ENABLE GATEKEEPER): File Size Validation
-        // ==========
-        // long maxSize = 1 * 1024 * 1024; // 1 MB
-        // if (securityGateway != null) {
-        // boolean isValid = securityGateway.validateFileSize(file.getSize(), maxSize);
-        // if (!isValid) {
-        // model.addAttribute("error", "File upload failed: File size exceeds the
-        // limit.");
-        // return "upload";
-        // }
-        // }
+        if (securityGateway != null) {
+            long maxSize = 100 * 1024 * 1024;
+            if (!securityGateway.validateFileSize(file.getSize(), maxSize)) {
+                model.addAttribute("error", "File size exceeds 1MB limit");
+                return "upload";
+            }
+        } else {
+            // Vulnerable: no server-side size check
+        }
 
         try {
             Path uploads = Paths.get("uploads").toAbsolutePath().normalize();
@@ -199,30 +172,30 @@ public class UnifiedController {
             @RequestParam String password,
             @RequestParam String username,
             Model model) {
-        // ========== VULNERABLE: No input validation ==========
-        // Store as-is (demo only)
+        if (inputValidator != null && !inputValidator.isValidEmail(email)) {
+            model.addAttribute("error", "Invalid email");
+            return "register";
+        }
+        if (securityGateway != null) {
+            if (!securityGateway.validateEmail(email) ||
+                    !securityGateway.validatePassword(password) ||
+                    !securityGateway.validateUsername(username)) {
+                model.addAttribute("error", "Invalid input format");
+                return "register";
+            }
+        } else {
+            // Vulnerable: no input validation
+        }
 
-        // ========== SECURE (UNCOMMENT / ENABLE GATEKEEPER): Input Validation
-        // ==========
-        // if (securityGateway != null) {
-        // if (!securityGateway.validateEmail(email) ||
-        // !securityGateway.validatePassword(password) ||
-        // !securityGateway.validateUsername(username)) {
-        // model.addAttribute("error", "Invalid input format");
-        // return "register";
-        // }
-        // }
-
-        // Simulate successful registration
         model.addAttribute("message", "Registered user: " + username);
         return "register";
     }
 
     // Rate limit test endpoint
     @GetMapping("/rate-limit-test")
-    public String rateLimitTest(Model model) {
-        model.addAttribute("message", "OK");
-        return "dashboard";
+    @ResponseBody
+    public String rateLimitTest() {
+        return "OK\n";
     }
 
     @GetMapping("/dashboard")

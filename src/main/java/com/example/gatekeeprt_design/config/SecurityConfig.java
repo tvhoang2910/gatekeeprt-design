@@ -12,13 +12,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/login", "/register", "/search", "/upload", "/view-log",
-                                "/view-log-demo", "/rate-limit-test", "/dashboard")
-                        .permitAll()
-                        .anyRequest().permitAll())
-                .csrf(csrf -> csrf.disable()); // Disable CSRF for demo
+        http.authorizeHttpRequests(authz -> authz.requestMatchers(
+                "/", "/login", "/register", "/search", "/upload", "/view-log",
+                "/view-log-demo", "/rate-limit-test", "/dashboard", "/uploads/**")
+                .permitAll()
+                .anyRequest().permitAll())
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
