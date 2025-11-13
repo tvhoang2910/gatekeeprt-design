@@ -4,12 +4,69 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import com.example.gatekeeprt_design.filter.BotDetectionFilter;
+import com.example.gatekeeprt_design.filter.BenchmarkFilter;
+import com.example.gatekeeprt_design.filter.RateLimitingFilter;
+import com.example.gatekeeprt_design.util.ApplicationContextProvider;
+import org.springframework.context.ApplicationContext;
 
-// @Component
+@Component
 public class SecurityGateway {
 
     @Autowired(required = false)
     private InputValidator validator;
+
+    private static ApplicationContext getContext() {
+        return ApplicationContextProvider.getApplicationContext();
+    }
+
+    /**
+     * Check if Rate Limiting filter is enabled
+     */
+    public static boolean isRateLimitingEnabled() {
+        ApplicationContext ctx = getContext();
+        return ctx != null && ctx.containsBeanDefinition("rateLimitingFilter")
+                || ctx != null && ctx.getBeansOfType(RateLimitingFilter.class).size() > 0;
+    }
+
+    /**
+     * Check if Bot Detection filter is enabled
+     */
+    public static boolean isBotDetectionEnabled() {
+        ApplicationContext ctx = getContext();
+        return ctx != null && ctx.containsBeanDefinition("botDetectionFilter")
+                || ctx != null && ctx.getBeansOfType(BotDetectionFilter.class).size() > 0;
+    }
+
+    /**
+     * Check if Benchmark filter is enabled
+     */
+    public static boolean isBenchmarkEnabled() {
+        ApplicationContext ctx = getContext();
+        return ctx != null && ctx.containsBeanDefinition("benchmarkFilter")
+                || ctx != null && ctx.getBeansOfType(BenchmarkFilter.class).size() > 0;
+    }
+
+    /**
+     * Get bot detection statistics
+     */
+    public static long getBotDetectionCount() {
+        return BotDetectionFilter.getBotDetectionCount();
+    }
+
+    /**
+     * Get benchmark metrics
+     */
+    public static String getBenchmarkMetrics() {
+        return BenchmarkFilter.getMetrics();
+    }
+
+    /**
+     * Get benchmark metrics as JSON
+     */
+    public static String getBenchmarkMetricsJSON() {
+        return BenchmarkFilter.getMetricsJSON();
+    }
 
     public boolean validateLogin(String username, String password) {
         if (!isValidUsername(username)) {

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Giám Sát Bảo Mật - GateKeeprt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card h3 {
+            color: #667eea;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .metric-unit {
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-badge.enabled {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-badge.disabled {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .control-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .control-section h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .feature-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .feature-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .btn-reset {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .btn-info {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: scale(1.05);
+        }
+
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .metrics-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .metrics-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .metrics-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .live-update {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: pulse 1.5s infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-links a {
+                display: block;
+                margin: 10px 0;
+            }
+
+            .feature-toggle {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .button-group {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>🛡️ Dashboard Giám Sát Bảo Mật</h1>
+                <p>Real-time Security & Performance Monitoring</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/login">Login</a>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div class="alert success" id="successAlert" style="display: none;">
+            ✓ <span id="alertMessage"></span>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="metrics-grid">
+            <!-- Total Requests -->
+            <div class="metric-card">
+                <div class="metric-icon">📈</div>
+                <div class="metric-value" id="totalRequests">--</div>
+                <div class="metric-label">Tổng Số Request</div>
+            </div>
+
+            <!-- Average Response Time -->
+            <div class="metric-card">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-value" id="avgResponseTime">-- ms</div>
+                <div class="metric-label">Thời Gian Phản Hồi Trung Bình</div>
+            </div>
+
+            <!-- Bots Detected -->
+            <div class="metric-card">
+                <div class="metric-icon">🤖</div>
+                <div class="metric-value" id="botCount">--</div>
+                <div class="metric-label">Bot Đã Phát Hiện</div>
+            </div>
+
+            <!-- Success Rate -->
+            <div class="metric-card">
+                <div class="metric-icon">✅</div>
+                <div class="metric-value" id="successRate">--%</div>
+                <div class="metric-label">Tỷ Lệ Thành Công</div>
+            </div>
+        </div>
+
+        <!-- Security Features Status -->
+        <div class="control-section">
+            <h2>🔐 Security Features Status</h2>
+
+            <!-- Rate Limiting -->
+            <div class="feature-toggle">
+                <div>
+                    <div class="feature-name">Bộ Lọc Giới Hạn Tốc Độ</div>
+                    <div class="feature-description">Giới hạn 100 request/phút per client</div>
+                </div>
+                <div class="button-group">
+                    <span class="status-badge" th:classappend="${rateLimitingEnabled} ? 'enabled' : 'disabled'">
+                        <span th:if="${rateLimitingEnabled}">✓ Enabled</span>
+                        <span th:if="!${rateLimitingEnabled}">✗ Disabled</span>
+                    </span>
+                    <button class="btn-info" onclick="showFeatureInfo('rate-limiting')">ℹ️ Info</button>
+                </div>
+            </div>
+
+            <!-- Bot Detection -->
+            <div class="feature-toggle">
+                <div>
+                    <div class="feature-name">Bộ Lọc Phát Hiện Bot</div>
+                    <div class="feature-description">Phát hiện và chặn bot tự động</div>
+                </div>
+                <div class="button-group">
+                    <span class="status-badge" th:classappend="${botDetectionEnabled} ? 'enabled' : 'disabled'">
+                        <span th:if="${botDetectionEnabled}">✓ Enabled</span>
+                        <span th:if="!${botDetectionEnabled}">✗ Disabled</span>
+                    </span>
+                    <button class="btn-info" onclick="showFeatureInfo('bot-detection')">ℹ️ Info</button>
+                </div>
+            </div>
+
+            <!-- Benchmark -->
+            <div class="feature-toggle">
+                <div>
+                    <div class="feature-name">Đo Đạc & Giám Sát</div>
+                    <div class="feature-description">Theo dõi hiệu suất và metrics</div>
+                </div>
+                <div class="button-group">
+                    <span class="status-badge" th:classappend="${benchmarkEnabled} ? 'enabled' : 'disabled'">
+                        <span th:if="${benchmarkEnabled}">✓ Enabled</span>
+                        <span th:if="!${benchmarkEnabled}">✗ Disabled</span>
+                    </span>
+                    <button class="btn-info" onclick="showFeatureInfo('benchmark')">ℹ️ Info</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Section -->
+        <div class="control-section">
+            <h2>⚙️ Management & Controls</h2>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #333; margin-bottom: 15px;">Reset Metrics</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn-reset" onclick="resetBotCount()">🔄 Đặt Lại Đếm Bot</button>
+                    <button class="btn-reset" onclick="resetMetrics()">🔄 Đặt Lại Tất Cả Metrics</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #333; margin-bottom: 15px;">Export Metrics</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn-info" onclick="exportMetricsJSON()">📥 Download JSON</button>
+                    <button class="btn-info" onclick="exportMetricsText()">📄 View as Text</button>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="color: #333; margin-bottom: 15px;">Auto-Refresh</h3>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <label>
+                        <input type="checkbox" id="autoRefresh" checked onchange="toggleAutoRefresh()">
+                        Enable auto-refresh every 5 seconds
+                    </label>
+                    <span class="spinner" id="spinner" style="display: none;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Metrics Table -->
+        <div class="control-section">
+            <h2>📈 Detailed Performance Metrics</h2>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Requests</td>
+                        <td><strong id="tableTotal">0</strong></td>
+                        <td>
+                            <span style="color: #27ae60;">●</span> Active
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Successful Requests</td>
+                        <td id="tableSuccessful">0</td>
+                        <td>
+                            <span style="color: #27ae60;">●</span> Good
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Failed Requests</td>
+                        <td id="tableFailed">0</td>
+                        <td>
+                            <span style="color: #e74c3c;">●</span> Monitor
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Average Response Time</td>
+                        <td><strong id="tableAvgResponse">0ms</strong></td>
+                        <td id="responseTimeStatus">
+                            <span style="color: #27ae60;">●</span> Optimal
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Bots Detected & Blocked</td>
+                        <td><strong id="tableBots">0</strong></td>
+                        <td>
+                            <span style="color: #f39c12;">●</span> Protected
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- How to Enable/Disable Features -->
+        <div class="control-section">
+            <h2>📝 How to Enable/Disable Features</h2>
+            <p style="color: #666; margin-bottom: 15px;">
+                To enable or disable any security filter, edit the corresponding Java class and toggle the
+                <strong>@Component</strong> annotation:
+            </p>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #333; margin-bottom: 10px;">1. Rate Limiting Filter</h4>
+                <div class="code-block">// Enable:
+                    @Component
+                    public class RateLimitingFilter implements Filter {
+                    ...
+
+                    // Disable:
+                    // @Component
+                    public class RateLimitingFilter implements Filter {
+                    ...</div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #333; margin-bottom: 10px;">2. Bot Detection Filter</h4>
+                <div class="code-block">// Enable:
+                    @Component
+                    public class BotDetectionFilter implements Filter {
+                    ...
+
+                    // Disable:
+                    // @Component
+                    public class BotDetectionFilter implements Filter {
+                    ...</div>
+            </div>
+
+            <div>
+                <h4 style="color: #333; margin-bottom: 10px;">3. Benchmark Filter</h4>
+                <div class="code-block">// Enable:
+                    @Component
+                    public class BenchmarkFilter implements Filter {
+                    ...
+
+                    // Disable:
+                    // @Component
+                    public class BenchmarkFilter implements Filter {
+                    ...</div>
+            </div>
+        </div>
+
+        <!-- Live Update Indicator -->
+        <div class="live-update" id="liveUpdate">
+            Last updated: <span id="lastUpdate">now</span>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval;
+        let lastRequestCount = 0;
+
+        // Initialize dashboard
+        function initDashboard() {
+            updateMetrics();
+            toggleAutoRefresh();
+        }
+
+        // Update metrics from API
+        function updateMetrics() {
+            fetch('/api/metrics')
+                .then(response => response.json())
+                .then(data => {
+                    updateUI(data);
+                    updateLastUpdateTime();
+                })
+                .catch(error => console.error('Error fetching metrics:', error));
+        }
+
+        // Update UI with metrics data
+        function updateUI(data) {
+            const total = data.totalRequests || 0;
+            const successful = data.successfulRequests || 0;
+            const failed = data.failedRequests || 0;
+            const avgResponse = data.averageResponseTime || 0;
+            const successRate = total > 0 ? ((successful / total) * 100).toFixed(1) : 100;
+            const botCount = data.botsDetected || 0;
+
+            // Update cards
+            document.getElementById('totalRequests').textContent = total;
+            document.getElementById('avgResponseTime').innerHTML =
+                avgResponse + '<span style="font-size: 0.5em;">ms</span>';
+            document.getElementById('successRate').innerHTML =
+                successRate + '<span style="font-size: 0.5em;">%</span>';
+            document.getElementById('botCount').textContent = botCount;
+
+            // Update progress bars
+            document.getElementById('requestsProgress').style.width =
+                Math.min((total / 100) * 100, 100) + '%';
+            document.getElementById('responseTimeProgress').style.width =
+                Math.min((avgResponse / 1000) * 100, 100) + '%';
+            document.getElementById('successProgress').style.width = successRate + '%';
+            document.getElementById('botProgress').style.width =
+                Math.min((botCount / 50) * 100, 100) + '%';
+
+            // Update table
+            document.getElementById('tableTotal').textContent = total;
+            document.getElementById('tableSuccessful').textContent = successful;
+            document.getElementById('tableFailed').textContent = failed;
+            document.getElementById('tableAvgResponse').textContent = avgResponse + 'ms';
+            document.getElementById('tableBots').textContent = botCount;
+
+            // Update response time status
+            const responseStatus = document.getElementById('responseTimeStatus');
+            if (avgResponse < 100) {
+                responseStatus.innerHTML = '<span style="color: #27ae60;">●</span> Optimal';
+            } else if (avgResponse < 500) {
+                responseStatus.innerHTML = '<span style="color: #f39c12;">●</span> Good';
+            } else {
+                responseStatus.innerHTML = '<span style="color: #e74c3c;">●</span> Slow';
+            }
+
+            // No longer need to fetch bot count separately - it's included in metrics
+        }
+
+        // Reset bot count
+        function resetBotCount() {
+            if (confirm('Bạn có chắc chắn muốn đặt lại số đếm bot không?')) {
+                fetch('/api/reset-bot-count', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        showAlert('Số đếm bot đã được đặt lại');
+                        updateMetrics();
+                    });
+            }
+        }
+
+        // Reset all metrics
+        function resetMetrics() {
+            if (confirm('Bạn có chắc chắn muốn đặt lại tất cả metrics không?')) {
+                fetch('/api/reset-metrics', { method: 'POST' })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        showAlert('Tất cả metrics đã được đặt lại');
+                        updateMetrics();
+                    });
+            }
+        }
+
+        // Export metrics as JSON
+        function exportMetricsJSON() {
+            fetch('/api/metrics')
+                .then(response => response.json())
+                .then(data => {
+                    const dataStr = JSON.stringify(data, null, 2);
+                    downloadFile(dataStr, 'metrics.json', 'application/json');
+                });
+        }
+
+        // Export metrics as text
+        function exportMetricsText() {
+            fetch('/api/metrics/text')
+                .then(response => response.text())
+                .then(data => {
+                    downloadFile(data, 'metrics.txt', 'text/plain');
+                });
+        }
+
+        // Download file helper
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Toggle auto-refresh
+        function toggleAutoRefresh() {
+            const isEnabled = document.getElementById('autoRefresh').checked;
+            const spinner = document.getElementById('spinner');
+
+            if (isEnabled) {
+                spinner.style.display = 'inline-block';
+                autoRefreshInterval = setInterval(updateMetrics, 5000);
+            } else {
+                spinner.style.display = 'none';
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
+        // Show feature info
+        function showFeatureInfo(feature) {
+            let info = '';
+            switch (feature) {
+                case 'rate-limiting':
+                    info = 'Rate Limiting Filter: Limits requests per client to 100 requests per minute to prevent brute force attacks and DDoS.';
+                    break;
+                case 'bot-detection':
+                    info = 'Bot Detection Filter: Identifies and blocks requests from bots by analyzing User-Agent headers.';
+                    break;
+                case 'benchmark':
+                    info = 'Benchmark Filter: Tracks all requests and measures response times for performance analysis.';
+                    break;
+            }
+            alert(info);
+        }
+
+        // Show alert message
+        function showAlert(message) {
+            const alert = document.getElementById('successAlert');
+            document.getElementById('alertMessage').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        // Update last update time
+        function updateLastUpdateTime() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+
+</html>

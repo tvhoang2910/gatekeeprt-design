@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload - Gatekeeper Demo</title>
+    <title>Tải Lên Tệp - Demo Gatekeeper</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -114,23 +114,23 @@
 
 <body>
     <div class="container">
-        <h1>📤 Upload File</h1>
+        <h1>📤 Tải Lên Tệp</h1>
 
         <div class="demo-note">
-            <strong>Upload Test:</strong> Max size: 1MB
+            <strong>Kiểm Tra Tải Lên:</strong> Kích thước tối đa: 1MB
         </div>
 
         <div class="upload-form">
             <form method="POST" action="/upload" enctype="multipart/form-data">
                 <input type="file" id="fileInput" name="file" required onchange="checkFileSize()">
-                <button type="submit">Upload</button>
+                <button type="submit">Tải Lên</button>
             </form>
         </div>
 
         <div th:if="${error}" class="message error" th:text="${error}"></div>
         <div th:if="${message}" class="message success" th:text="${message}"></div>
 
-        <a href="/">Back to Home</a>
+        <a href="/">Về Trang Chủ</a>
     </div>
 </body>
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search - Gatekeeper Demo</title>
+    <title>Tìm Kiếm - Demo Gatekeeper</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -86,25 +86,25 @@
 
 <body>
     <div class="container">
-        <h1>🔍 Search</h1>
+        <h1>🔍 Tìm Kiếm</h1>
 
         <div class="demo-note">
-            <strong>XSS Test:</strong> &lt;script&gt;alert('XSS')&lt;/script&gt;
+            <strong>Test XSS:</strong> &lt;script&gt;alert('XSS')&lt;/script&gt;
         </div>
 
         <div class="search-form">
             <form method="POST" action="/search">
-                <input type="text" name="query" placeholder="Enter search query..." required>
-                <button type="submit">Search</button>
+                <input type="text" name="query" placeholder="Nhập từ khóa tìm kiếm..." required>
+                <button type="submit">Tìm Kiếm</button>
             </form>
         </div>
 
         <div th:if="${result}" class="result">
-            <strong>Search Result:</strong><br>
+            <strong>Kết Quả Tìm Kiếm:</strong><br>
             <p th:utext="${result}"></p>
         </div>
 
-        <a href="/">Back to Home</a>
+        <a href="/">Về Trang Chủ</a>
     </div>
 </body>
 

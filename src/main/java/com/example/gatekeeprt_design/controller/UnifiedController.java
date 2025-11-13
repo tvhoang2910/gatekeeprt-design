@@ -47,10 +47,10 @@ public class UnifiedController {
         }
 
         if (authenticated) {
-            model.addAttribute("message", "Welcome, " + username);
+            model.addAttribute("message", "Chào mừng, " + username);
             return "redirect:/dashboard";
         } else {
-            model.addAttribute("error", "Login failed!");
+            model.addAttribute("error", "Đăng nhập thất bại!");
             return "login";
         }
     }
@@ -74,9 +74,9 @@ public class UnifiedController {
 
     @PostMapping("/search")
     public String search(@RequestParam String query, Model model) {
-        String result = query + " - Search result";
+        String result = query + " - Kết quả tìm kiếm";
         if (securityGateway != null) {
-            result = securityGateway.sanitizeXSS(query) + " - Search result";
+            result = securityGateway.sanitizeXSS(query) + " - Kết quả tìm kiếm";
         } else {
             // Vulnerable: no escaping
         }
@@ -196,12 +196,6 @@ public class UnifiedController {
     @ResponseBody
     public String rateLimitTest() {
         return "OK\n";
-    }
-
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        // simple dashboard
-        return "dashboard";
     }
 
 }

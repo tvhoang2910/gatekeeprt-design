@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Gatekeeper Demo</title>
+    <title>Đăng Ký - Demo Gatekeeper</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,25 +100,25 @@
 
 <body>
     <div class="container">
-        <h1>📝 Register</h1>
+        <h1>📝 Đăng Ký</h1>
 
         <div class="demo-note">
-            <strong>Input Validation Test:</strong> Try email: &lt;script&gt;alert(1)&lt;/script&gt;
+            <strong>Test Validate Input:</strong> Thử email: &lt;script&gt;alert(1)&lt;/script&gt;
         </div>
 
         <form method="POST" action="/register">
-            <input type="text" name="username" placeholder="Username" required>
+            <input type="text" name="username" placeholder="Tên đăng nhập" required>
             <!-- <input type="email" name="email" placeholder="Email" required> -->
             <input type="text" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Register</button>
+            <input type="password" name="password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng Ký</button>
         </form>
 
         <div th:if="${error}" class="message error" th:text="${error}"></div>
         <div th:if="${message}" class="message success" th:text="${message}"></div>
 
-        <a href="/">Back to Home</a>
-        <a href="/login">Already have account? Login</a>
+        <a href="/">Về Trang Chủ</a>
+        <a href="/login">Đã có tài khoản? Đăng nhập</a>
     </div>
 </body>
 
