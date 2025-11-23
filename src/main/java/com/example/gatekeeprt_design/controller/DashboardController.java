@@ -84,7 +84,8 @@ public class DashboardController {
     @ResponseBody
     public String resetMetrics() {
         BenchmarkFilter.resetMetrics();
-        return "{\"status\": \"success\", \"message\": \"Metrics reset\"}";
+        BotDetectionFilter.resetBotDetectionCount();
+        return "{\"status\": \"success\", \"message\": \"All metrics reset\"}";
     }
 
     /**

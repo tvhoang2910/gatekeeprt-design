@@ -227,68 +227,6 @@
                 <a href="/monitoring-dashboard">ℹ️ Thông Tin</a>
             </div>
         </div>
-
-        <!-- Terminal Commands Section -->
-        <div class="section">
-            <h2>🖥️ Lệnh Test qua Terminal (PowerShell/CMD)</h2>
-            <div class="info-box">
-                <strong>Lưu ý:</strong> Chỉ dùng cho học tập trên localhost!
-            </div>
-
-            <h3>1️⃣ SQL Injection - Bypass Login</h3>
-            <code>curl.exe -X POST http://localhost:8080/login -d "username=' OR '1'='1 --&password=anything"</code>
-            <code>Invoke-RestMethod -Uri "http://localhost:8080/login" -Method POST -Body @{username="' OR '1'='1 --";password="anything"}</code>
-
-            <h3>2️⃣ XSS - Tìm Kiếm</h3>
-            <code>curl.exe -X POST http://localhost:8080/search -d "query=&lt;script&gt;alert('XSS')&lt;/script&gt;"</code>
-
-            <h3>3️⃣ Path Traversal - Đọc pom.xml</h3>
-            <code>curl.exe "http://localhost:8080/view-log?filename=../../../pom.xml"</code>
-
-            <h3>4️⃣ DoS - Spam Tìm Kiếm</h3>
-            <code>for($i=0; $i -lt 100; $i++) { curl.exe -X POST http://localhost:8080/search -d "query=dos" }</code>
-
-            <h3>5️⃣ Upload DoS - Gửi File Lớn</h3>
-            <code>$file = New-Item -Path "testfile.bin" -Value ([byte[]]@(0)*2MB); curl.exe -F "file=@testfile.bin" http://localhost:8080/upload</code>
-
-            <h3>6️⃣ Test Rate Limiting</h3>
-            <code>for($i=0; $i -lt 150; $i++) { curl.exe http://localhost:8080/rate-limit-test }</code>
-
-            <h3>7️⃣ Đăng Ký - Email Không Hợp Lệ</h3>
-            <code>curl.exe -X POST http://localhost:8080/register -d "username=test&email=&lt;script&gt;&password=pass123"</code>
-
-            <h3>8️⃣ Xem Dashboard Giám Sát</h3>
-            <code>curl.exe "http://localhost:8080/monitoring-dashboard"</code>
-        </div>
-
-        <!-- Auth Section -->
-        <div class="section">
-            <h2>🔐 Demo Xác Thực</h2>
-            <div class="info-box">
-                <strong>Tài Khoản Mặc Định (Sau Khi Fix Bảo Mật):</strong><br>
-                Tên đăng nhập: <code>admin</code><br>
-                Mật khẩu: <code>admin123</code>
-            </div>
-            <a class="demo-link" href="/login">Đến Trang Đăng Nhập</a>
-        </div>
-
-        <!-- Info Section -->
-        <div class="section">
-            <h2>📚 Cách Bật Bảo Mật (Mẫu Gatekeeper)</h2>
-            <p>Tất cả code an toàn đã comment sẵn trong <code>UnifiedController.java</code> và
-                <code>SecurityGateway.java</code>.
-            </p>
-            <p><strong>Để bật:</strong> Bỏ comment dòng có <code>// ========== SECURE (UNCOMMENT) ==========</code>
-            </p>
-
-            <div class="info-box">
-                <strong>Ví dụ:</strong><br>
-                Tìm: <code>// if (securityGateway != null)</code><br>
-                Sửa thành: <code>if (securityGateway != null)</code>
-            </div>
-
-            <p><strong>Kết quả:</strong> SecurityGateway sẽ xử lý validation/sanitization tự động → an toàn!</p>
-        </div>
     </div>
 </body>
 

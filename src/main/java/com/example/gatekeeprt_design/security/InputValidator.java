@@ -3,7 +3,7 @@ package com.example.gatekeeprt_design.security;
 import org.springframework.stereotype.Component;
 import java.util.regex.Pattern;
 
-@Component
+//@Component
 public class InputValidator {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(

@@ -524,54 +524,6 @@
             </table>
         </div>
 
-        <!-- How to Enable/Disable Features -->
-        <div class="control-section">
-            <h2>📝 How to Enable/Disable Features</h2>
-            <p style="color: #666; margin-bottom: 15px;">
-                To enable or disable any security filter, edit the corresponding Java class and toggle the
-                <strong>@Component</strong> annotation:
-            </p>
-
-            <div style="margin-bottom: 20px;">
-                <h4 style="color: #333; margin-bottom: 10px;">1. Rate Limiting Filter</h4>
-                <div class="code-block">// Enable:
-                    @Component
-                    public class RateLimitingFilter implements Filter {
-                    ...
-
-                    // Disable:
-                    // @Component
-                    public class RateLimitingFilter implements Filter {
-                    ...</div>
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <h4 style="color: #333; margin-bottom: 10px;">2. Bot Detection Filter</h4>
-                <div class="code-block">// Enable:
-                    @Component
-                    public class BotDetectionFilter implements Filter {
-                    ...
-
-                    // Disable:
-                    // @Component
-                    public class BotDetectionFilter implements Filter {
-                    ...</div>
-            </div>
-
-            <div>
-                <h4 style="color: #333; margin-bottom: 10px;">3. Benchmark Filter</h4>
-                <div class="code-block">// Enable:
-                    @Component
-                    public class BenchmarkFilter implements Filter {
-                    ...
-
-                    // Disable:
-                    // @Component
-                    public class BenchmarkFilter implements Filter {
-                    ...</div>
-            </div>
-        </div>
-
         <!-- Live Update Indicator -->
         <div class="live-update" id="liveUpdate">
             Last updated: <span id="lastUpdate">now</span>
@@ -584,19 +536,31 @@
 
         // Initialize dashboard
         function initDashboard() {
+            console.log('🚀 Initializing dashboard...');
             updateMetrics();
             toggleAutoRefresh();
+            console.log('✅ Dashboard initialized with auto-refresh');
         }
 
         // Update metrics from API
         function updateMetrics() {
-            fetch('/api/metrics')
-                .then(response => response.json())
+            console.log('🔄 Fetching metrics from /api/metrics...');
+            // Add timestamp to prevent caching
+            fetch('/api/metrics?t=' + new Date().getTime(), { cache: "no-store" })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('📊 Received metrics:', data);
                     updateUI(data);
                     updateLastUpdateTime();
                 })
-                .catch(error => console.error('Error fetching metrics:', error));
+                .catch(error => {
+                    console.error('❌ Error fetching metrics:', error);
+                });
         }
 
         // Update UI with metrics data
@@ -609,40 +573,60 @@
             const botCount = data.botsDetected || 0;
 
             // Update cards
-            document.getElementById('totalRequests').textContent = total;
-            document.getElementById('avgResponseTime').innerHTML =
-                avgResponse + '<span style="font-size: 0.5em;">ms</span>';
-            document.getElementById('successRate').innerHTML =
-                successRate + '<span style="font-size: 0.5em;">%</span>';
-            document.getElementById('botCount').textContent = botCount;
+            const totalEl = document.getElementById('totalRequests');
+            if (totalEl) totalEl.textContent = total;
 
-            // Update progress bars
-            document.getElementById('requestsProgress').style.width =
-                Math.min((total / 100) * 100, 100) + '%';
-            document.getElementById('responseTimeProgress').style.width =
-                Math.min((avgResponse / 1000) * 100, 100) + '%';
-            document.getElementById('successProgress').style.width = successRate + '%';
-            document.getElementById('botProgress').style.width =
-                Math.min((botCount / 50) * 100, 100) + '%';
+            const avgTimeEl = document.getElementById('avgResponseTime');
+            if (avgTimeEl) avgTimeEl.innerHTML = avgResponse + '<span style="font-size: 0.5em;">ms</span>';
+
+            const successRateEl = document.getElementById('successRate');
+            if (successRateEl) successRateEl.innerHTML = successRate + '<span style="font-size: 0.5em;">%</span>';
+
+            const botCountEl = document.getElementById('botCount');
+            if (botCountEl) botCountEl.textContent = botCount;
+
+            // Update progress bars (only if they exist)
+            const requestsProgress = document.getElementById('requestsProgress');
+            if (requestsProgress) requestsProgress.style.width = Math.min((total / 100) * 100, 100) + '%';
+
+            const responseTimeProgress = document.getElementById('responseTimeProgress');
+            if (responseTimeProgress) responseTimeProgress.style.width = Math.min((avgResponse / 1000) * 100, 100) + '%';
+
+            const successProgress = document.getElementById('successProgress');
+            if (successProgress) successProgress.style.width = successRate + '%';
+
+            const botProgress = document.getElementById('botProgress');
+            if (botProgress) botProgress.style.width = Math.min((botCount / 50) * 100, 100) + '%';
 
             // Update table
-            document.getElementById('tableTotal').textContent = total;
-            document.getElementById('tableSuccessful').textContent = successful;
-            document.getElementById('tableFailed').textContent = failed;
-            document.getElementById('tableAvgResponse').textContent = avgResponse + 'ms';
-            document.getElementById('tableBots').textContent = botCount;
+            const tableTotalEl = document.getElementById('tableTotal');
+            if (tableTotalEl) tableTotalEl.textContent = total;
+
+            const tableSuccessfulEl = document.getElementById('tableSuccessful');
+            if (tableSuccessfulEl) tableSuccessfulEl.textContent = successful;
+
+            const tableFailedEl = document.getElementById('tableFailed');
+            if (tableFailedEl) tableFailedEl.textContent = failed;
+
+            const tableAvgResponseEl = document.getElementById('tableAvgResponse');
+            if (tableAvgResponseEl) tableAvgResponseEl.textContent = avgResponse + 'ms';
+
+            const tableBotsEl = document.getElementById('tableBots');
+            if (tableBotsEl) tableBotsEl.textContent = botCount;
 
             // Update response time status
             const responseStatus = document.getElementById('responseTimeStatus');
-            if (avgResponse < 100) {
-                responseStatus.innerHTML = '<span style="color: #27ae60;">●</span> Optimal';
-            } else if (avgResponse < 500) {
-                responseStatus.innerHTML = '<span style="color: #f39c12;">●</span> Good';
-            } else {
-                responseStatus.innerHTML = '<span style="color: #e74c3c;">●</span> Slow';
+            if (responseStatus) {
+                if (avgResponse < 100) {
+                    responseStatus.innerHTML = '<span style="color: #27ae60;">●</span> Optimal';
+                } else if (avgResponse < 500) {
+                    responseStatus.innerHTML = '<span style="color: #f39c12;">●</span> Good';
+                } else {
+                    responseStatus.innerHTML = '<span style="color: #e74c3c;">●</span> Slow';
+                }
             }
 
-            // No longer need to fetch bot count separately - it's included in metrics
+            console.log('✅ Metrics updated:', { total, botCount, avgResponse, successRate });
         }
 
         // Reset bot count
@@ -703,15 +687,21 @@
 
         // Toggle auto-refresh
         function toggleAutoRefresh() {
-            const isEnabled = document.getElementById('autoRefresh').checked;
+            const checkbox = document.getElementById('autoRefresh');
+            const isEnabled = checkbox ? checkbox.checked : true;
             const spinner = document.getElementById('spinner');
 
+            console.log('🔄 Auto-refresh toggled:', isEnabled);
+
             if (isEnabled) {
-                spinner.style.display = 'inline-block';
-                autoRefreshInterval = setInterval(updateMetrics, 5000);
+                if (spinner) spinner.style.display = 'inline-block';
+                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+                autoRefreshInterval = setInterval(updateMetrics, 2000);
+                console.log('✅ Auto-refresh enabled (2 seconds interval)');
             } else {
-                spinner.style.display = 'none';
-                clearInterval(autoRefreshInterval);
+                if (spinner) spinner.style.display = 'none';
+                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+                console.log('⏸️ Auto-refresh disabled');
             }
         }
 

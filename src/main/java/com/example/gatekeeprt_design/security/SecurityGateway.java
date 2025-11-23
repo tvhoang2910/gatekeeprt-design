@@ -10,7 +10,7 @@ import com.example.gatekeeprt_design.filter.RateLimitingFilter;
 import com.example.gatekeeprt_design.util.ApplicationContextProvider;
 import org.springframework.context.ApplicationContext;
 
-@Component
+//@Component
 public class SecurityGateway {
 
     @Autowired(required = false)

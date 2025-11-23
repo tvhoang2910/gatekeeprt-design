@@ -7,12 +7,14 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-@Component
+//@Component
+@Order(2)
 public class BotDetectionFilter implements Filter {
 
     /**
@@ -28,6 +30,7 @@ public class BotDetectionFilter implements Filter {
             Pattern.compile("crawler", Pattern.CASE_INSENSITIVE),
             Pattern.compile("spider", Pattern.CASE_INSENSITIVE),
             Pattern.compile("scraper", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("scrapy", Pattern.CASE_INSENSITIVE),
             Pattern.compile("curl", Pattern.CASE_INSENSITIVE),
             Pattern.compile("wget", Pattern.CASE_INSENSITIVE),
             Pattern.compile("python", Pattern.CASE_INSENSITIVE),
